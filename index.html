@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Feed Example</title>
+
+	<script type="text/javascript" charset="utf-8" srsc="lawnchair.js"></script>
+	<script type="text/javascript" charset="utf-8" srsc="lawnchair-webkit-sqllite.js"></script>
+	<script type="text/javascript" charset="utf-8" src="jquery.2.0.js"></script>
+	
+	
+	<script src="json2.js"></script>
+	<script src="jstorage.js"></script>
+
+
+
+	<script type="text/javascript" charset="utf-8">
+
+    // Wait for PhoneGap to load
+    //
+  // document.addEventListener("deviceready", onDeviceReady, false);
+
+    // PhoneGap is ready
+    //
+    $(document).ready(function() {
+
+    	$.jStorage.set('testKey','testValue');
+    	$.jStorage.set('testKey2','testValue2');
+
+    	$.ajax({
+    		'url': 'http://ajax.googleapis.com/ajax/services/feed/load?v=1.0&num=10&q=http%3A%2F%2Fnews.google.com%2Fnews%3Foutput%3Drss',
+    		'dataType': 'jsonp',
+    		'crossDomain': true
+    	}).done(function(data){
+
+    		console.log(data);
+
+    		feed = $('#feed');
+    		$.each(data.responseData.feed.entries, function(index, value){
+    			console.log(value);
+    			//Create key;
+    			x = value.title;
+    			feed.append('<div style="margin-bottom: 10px"> \
+    					<h3 style="margin-bottom: 2px"><small style="font-size: 80%; font-weight: normal">'+ value.publishedDate +'</small> -- '+ value.title + '</h3> \
+    					<p style="margin-top: 2px">'+ value.contentSnippet + '</p></div>');
+    			
+
+    			
+    		});
+
+    	});
+
+    	$('#testButton').on('click', function(){
+    		// Lawnchair(function(){
+    		// 	this.nuke();
+    		// });
+
+    		//Get last message;
+    		lastMessage = false;
+
+    		Lawnchair(function(){
+    			this.save({key:Math.random().toString(36).substr(2), msg:'hooray!!'});
+    		});
+
+    		//updateFeed();
+
+    	});
+
+
+    	$('#populateList').on('click', function(){
+
+    		feed = $('#feed');
+    		Lawnchair(function() {
+    			this.all(function(x){
+    				$.each(x, function(e, i){
+    					if(feed.find('div.n.'+i.key).length == 0)
+    						feed.append('<div class="n '+i.key+'">'+i.msg+' - '+i.key+'</div>');
+
+    				});
+    			});
+
+    		});
+
+    	});
+
+
+    });
+
+    </script>
+</head>
+<body>
+	<h1>Feed Example</h1>
+<!-- 
+
+	<button id="testButton">Click Me to get updates (PS - a new update will be generated every minute)</button>
+	
+	<br />
+
+	<br />
+	<button id="populateList">Populate List</button>
+ -->
+	<div id="feed">
+	
+
+	</div>
+
+
+</body>
+</html>
